@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>Kittens!</title>
+</head>
+<body>
+    <h1>Email a Kitten!</h1>
+    <form action="{% url 'email-a-kitten' %}" method="post">
+        {% csrf_token %}
+        {{ kitten_form.as_p }}
+        <input type="submit" "Kitten Me!">
+    </form>
+</body>
+</html>

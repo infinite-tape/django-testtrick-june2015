@@ -1,0 +1,7 @@
+Hi,
+
+You've received a kitten.
+
+{{ the_kitten.thumbnail }}
+
+Congratulations!

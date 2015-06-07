@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Server email
+SERVER_EMAIL = 'no-reply@jesselegg.com'
 
 # Application definition
 
@@ -37,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'testtrick.apps.viewapi'
+    'testtrick.apps.kittens'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -101,3 +103,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
