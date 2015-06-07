@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title>You emailed a kitten!</title>
+</head>
+<body>
+    {% ifequal num_messages 1 %}
+      <h1>You emailed a Kitten!</h1>
+      <p>Congratulations! You emailed the following kitten to {{ email }}</p>
+      <img src="{{ the_kitten.thumbnail }}">
+    {% else %}
+      <h1>Kitten email failed!</h1>
+      <p>Oh, no! We failed to email the kitten!</p>
+    {% endifequal %}
+</body>
+</html>
