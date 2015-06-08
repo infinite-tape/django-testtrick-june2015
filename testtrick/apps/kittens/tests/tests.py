@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
@@ -23,3 +23,17 @@ class KittenEmailTest(TestCase):
         self.assertEqual(mail.outbox[0].subject, self.kitten_email_subject)
         # verify that the email was sent from correct email address
         self.assertEqual(mail.outbox[0].from_email, settings.SERVER_EMAIL)
+
+    @override_settings(SERVER_EMAIL='no-reply@yahoo.com')
+    def test_email_kitten_from_email(self):
+        '''
+        Test that changing settings.SERVER_EMAIL results in a different From:
+        address in our kitten emails.
+        '''
+        response = self.client.post(
+            reverse("email-a-kitten"),
+            {'email': 'kitten_lord@gmail.com'})
+        # internally the view should be using settings.SERVER_EMAIL as the
+        # from address, so if we override it with something hard-coded, the
+        # email should be sent from the override
+        self.assertEqual(mail.outbox[0].from_email, 'no-reply@yahoo.com')
