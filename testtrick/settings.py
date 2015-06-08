@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'testtrick.apps.kittens'
+    'testtrick.apps.kittens',
+    'django_nose'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -105,3 +106,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Use the nose test runner for Django insted of default
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
