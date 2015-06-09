@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from httpretty import HTTPretty
+from unittest.mock import MagicMock, patch
 
 
 MOCK_RESPONSE = '''
@@ -73,6 +74,7 @@ MOCK_RESPONSE = '''
     }
 '''
 
+
 class KittenTest(TestCase):
 
     def setUp(self):
@@ -128,3 +130,53 @@ class KittenTest(TestCase):
         response = self.client.post(reverse("show-a-kitten"))
         self.assertIn("The saddest kitten in the world",
                       response.content.decode("utf8"))
+
+
+class KittenTestMailMock(TestCase):
+
+    def setUp(self):
+        # monkey patch Django's send_mail() function for fun & profit!
+        # We must patch the name of the function relative to the module that
+        # is using it (kittens.views), NOT at the source (django.core.mail).
+        # autospec will enforce a signature check on all function calls.
+        self.send_mail_patcher = patch(
+            'testtrick.apps.kittens.views.send_mail',
+            autospec=True)
+        self.mock_send_mail = self.send_mail_patcher.start()
+        # create a fake object to use as a return value from our patched
+        # function. it is silly to mock an integer, but this is intended
+        # to demonstrate the use of Mock objects in concert with monkey
+        # patching. This would make more sense if send_mail() returned an
+        # object or anything more complex than an integer primitive
+        send_mail_return_mock = MagicMock(return_value=1)
+        # set the return value on the mock send_mail function to be our integer
+        self.mock_send_mail.return_value = int(send_mail_return_mock)
+
+        # Mock out our reddit API endpoint
+        HTTPretty.enable()
+        HTTPretty.allow_net_connect = False
+        HTTPretty.register_uri(
+            HTTPretty.GET,
+            "http://www.reddit.com/r/Awww/search/.json",
+            body=MOCK_RESPONSE,
+            content_type='application/json')
+
+    def tearDown(self):
+        mail.outbox = []
+        # stop patching send_mail
+        self.send_mail_patcher.stop()
+        HTTPretty.disable()
+        HTTPretty.reset()
+
+    def test_email_kitten_mock(self):
+        '''
+        Test our mock send_mail function.
+        '''
+        response = self.client.post(
+            reverse("email-a-kitten"),
+            {'email': 'kitten_lord@gmail.com'})
+        self.assertEqual(response.status_code, 200)
+        # verify there are 0 emails in the outbox. this is because we have
+        # mocked out the send_mail function so that it doesn't actually do
+        # anything (just pretends to). therefore our outbox is empty.
+        self.assertEqual(len(mail.outbox), 0)
