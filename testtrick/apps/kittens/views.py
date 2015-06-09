@@ -5,7 +5,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-import praw
+import requests
+import json
 
 from testtrick.apps.kittens.forms import EmailKittenForm
 
@@ -14,14 +15,15 @@ def get_a_kitten():
     '''
     Retrieve a kitten from the Awww subreddt via Reddit's API.
     '''
-    # initialize reddit api
-    reddit_api = praw.Reddit(user_agent="djangotesttrick")
-    # get a handle to the 'Awww' subreddit
-    aww_subreddit = reddit_api.get_subreddit("awww")
-    kitten_results = aww_subreddit.search("kitten", sort="new", limit=100)
+    kitten_url = "http://www.reddit.com/r/Awww/search/.json"
+    payload = {'q': 'kitten', 'sort': 'new', 'limit': 100}
+    response = requests.get(kitten_url, params=payload)
+    raw_json_response = json.loads(response.content.decode("utf8"))
+    data_list = raw_json_response['data']['children']
+    kitten_results = list(map(lambda x: x['data'], data_list))
 
     # sometimes you get self posts, we want to filter those out...
-    kittens = [k for k in kitten_results if k.thumbnail != 'self']
+    kittens = [k for k in kitten_results if k['thumbnail'] != 'self']
     return random.choice(kittens)
 
 
