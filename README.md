@@ -2,7 +2,8 @@
 
 This repository contains a Django project that demonstrates some nifty
 Django testing tricks. It was part of a presentation for the Pittsburgh
-Code & Supply Django meet-up, June 9, 2015. It was written by Jesse Legg.
+Code & Supply Django meet-up, June 9, 2015. It was written by
+Jesse Legg (jesse.legg at gmail or @jesselegg).
 
 All code is written against Django 1.8 and Python 3, but much of it should
 work on earlier versions of Django and Python 2.
